@@ -1,13 +1,9 @@
-# VMware Library for Puppet Modules
+# Transport Library for Puppet Modules
 
-[![Build Status](https://travis-ci.org/vmware/vmware-vmware_lib.png?branch=master)](https://travis-ci.org/vmware/vmware-vmware_lib)
-
-Common functionality for VMware modules.
+[![Build Status](https://travis-ci.org/nanliu/puppet-transport.png?branch=master)](https://travis-ci.org/nanliu/puppet-transport)
 
 * Transport resource support for:
-** ssh (vCSA)
-** rbvmomi (vCenter)
-** REST (vCNS/vCD)
-* Puppet features for gems (deprecated in Puppet 3.0).
-* Puppet properties for managing array, hash, array of hashes, etc.
-* Shared Puppet functions
+    * ssh/scp (via net/ssh)
+    * WinRM
+
+This is based on VMware-vmware_lib.
