@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'hashdiff'
 gem 'rbvmomi'
+gem 'winrm'
 gem 'net-ssh'
 gem 'net-scp'
 
