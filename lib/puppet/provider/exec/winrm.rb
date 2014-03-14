@@ -8,21 +8,17 @@ rescue LoadError => e
   require_relative '../../../puppet_x/puppetlabs/transport/winrm'
 end
 
-Puppet::Type.type(:exec).provide(:winrm_ps, :parent => Puppet::Provider::Exec) do
+Puppet::Type.type(:exec).provide(:winrm, :parent => Puppet::Provider::Exec) do
+  include PuppetX::Puppetlabs::Transport
+
   # We need to simulate command $?.exitstatus:
   ExitStatus = Struct.new(:exitstatus)
 
-  # We can only have a single parent provider, so small amount of duplicate code:
-  def winrm
-    @transport ||= PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => resource[:transport], :catalog => resource.catalog, :provider => 'winrm')
-    @transport.winrm
-  end
-
   def run(command, check = false)
-    output = winrm.powershell(command)
-    stdout = output[:data].collect{|line| line[:stdout]}.join
-    stderr = output[:data].collect{|line| line[:stderr]}.join
-    Puppet.debug(stdout+stderr)
+    output = transport.powershell(command)
+    stdout = output[:data].collect{|line| line[:stdout]}.compact.join("\n")
+    stderr = output[:data].collect{|line| line[:stderr]}.compact.join("\n")
+    Puppet.debug("WinRM output:\n#{stdout+stderr}")
     # This is required to provide exitstatus for parent provider
     exitcode = ExitStatus.new(output[:exitcode])
     [stdout+stderr, exitcode]
