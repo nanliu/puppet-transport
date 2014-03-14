@@ -1,5 +1,6 @@
 fixtures:
   repositories:
     stdlib: 'git://github.com/puppetlabs/puppetlabs-stdlib.git'
+    pe_gem: 'git://github.com/puppetlabs/puppetlabs-pe_gem.git'
   symlinks:
     transport: "#{source_dir}"

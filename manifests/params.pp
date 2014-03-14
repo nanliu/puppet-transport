@@ -1,6 +1,5 @@
 # Copyright (C) 2013 VMware, Inc.
-# vmware_lib common parameters
-class vmware_lib::params {
+class transport::params {
 
   if $::puppetversion =~ /Puppet Enterprise/ {
     $provider  = 'pe_gem'
