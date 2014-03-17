@@ -19,12 +19,12 @@ describe Puppet::Type.type(:service).provider(:ssh) do
       provider.class.stubs(:transport).returns(@ssh)
     end
 
-    it 'should detect if the service is running' do
+    it 'should detect the service is running' do
       @ssh.stubs(:exec!).with('/etc/init.d/foo status; echo $?').returns "foo is running\n0"
       provider.status.should == :running
     end
 
-    it 'should detect if the line does not exists in the file' do
+    it 'should start the service when appropriate' do
       @ssh.stubs(:exec!).with('/etc/init.d/foo status; echo $?').returns "foo is stopped\n2"
       provider.status.should == :stopped
       @ssh.expects(:exec!).with('/etc/init.d/foo start')
@@ -50,12 +50,12 @@ describe Puppet::Type.type(:service).provider(:ssh) do
       provider.class.stubs(:transport).returns(@ssh)
     end
 
-    it 'should detect if the service is running' do
+    it 'should detect if the service state with custom command' do
       @ssh.stubs(:exec!).with('service foo status; echo $?').returns "foo is running\n0"
       provider.status.should == :running
     end
 
-    it 'should detect if the line does not exists in the file' do
+    it 'should start the service with custom command' do
       @ssh.stubs(:exec!).with('service foo status; echo $?').returns "foo is stopped\n2"
       provider.status.should == :stopped
       @ssh.expects(:exec!).with('service foo start')
