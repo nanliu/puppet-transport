@@ -53,6 +53,23 @@ Create custom transport ... (for now see VMware vCenter & vShield (vCNS) modules
 
 ## Known issues
 
+Error message:
+```
+Could not evaluate: Bad HTTP response returned from server (401)
+```
+
+Update WinRM configuration to match authentication methods (see [WinRM documentation](https://github.com/WinRb/WinRM)):
+```powershell
+winrm set winrm/config/client/auth @{Basic="true"}
+winrm set winrm/config/service/auth @{Basic="true"}
+winrm set winrm/config/service @{AllowUnencrypted="true"}
+```
+
+Error message:
+* PSRemoting Transport Exception
+* OutOfMemory Exception
+* Could not reserve enough space for object heap
+
 The WinRM provider process is limited to 150 MB by default. Some useful configuration settings:
 
 ```powershell
