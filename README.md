@@ -60,9 +60,9 @@ Could not evaluate: Bad HTTP response returned from server (401)
 
 Update WinRM configuration to match authentication methods (see [WinRM documentation](https://github.com/WinRb/WinRM)):
 ```powershell
-winrm set winrm/config/client/auth @{Basic="true"}
-winrm set winrm/config/service/auth @{Basic="true"}
-winrm set winrm/config/service @{AllowUnencrypted="true"}
+winrm set winrm/config/client/auth '@{Basic="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 ```
 
 Error message:
@@ -75,7 +75,7 @@ The WinRM provider process is limited to 150 MB by default. Some useful configur
 ```powershell
 winrm set winrm/config/winrs '@{MaxMemoryPerShellMB=1024}'
 winrm set winrm/config/winrs '@{MaxShellsPerUser=30}'
-winrm set winrm/config/wrinrs '@{MaxProcessesPerShell=15}'
+winrm set winrm/config/winrs '@{MaxProcessesPerShell=15}'
 ```
 
 If the MaxMemoryPerShellMB configuration appears to be ignored, please see [KB2842230](http://support.microsoft.com/kb/2842230). The hotfix for Windows 8/Windows 2012 x64 is available at the following [link](http://hotfixv4.microsoft.com/Windows%208%20RTM/nosp/Fix452763/9200/free/463941_intl_x64_zip.exe).
