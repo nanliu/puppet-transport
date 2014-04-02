@@ -12,6 +12,7 @@ module PuppetX::Puppetlabs::Transport
 
       port = @options.fetch(:port, 5985)
       @connection = @options.fetch(:connection, :plaintext)
+      @timeout    = @options.fetch(:timeout, 60)
       case @connection
       when :plaintext
         @endpoint = "http://#{opts[:server]}:#{port}/wsman"
@@ -35,6 +36,7 @@ module PuppetX::Puppetlabs::Transport
         @connection,
         @options
       )
+      @winrm.set_timeout(@timeout)
     end
   end
 end
