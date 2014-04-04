@@ -38,5 +38,10 @@ module PuppetX::Puppetlabs::Transport
       )
       @winrm.set_timeout(@timeout)
     end
+
+    def powershell(cmd)
+      Puppet.debug("Executing on #{@host}:\n#{cmd}")
+      @winrm.powershell(cmd)
+    end
   end
 end
