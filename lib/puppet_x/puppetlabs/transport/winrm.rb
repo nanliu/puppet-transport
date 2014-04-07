@@ -40,7 +40,7 @@ module PuppetX::Puppetlabs::Transport
     end
 
     def powershell(cmd)
-      Puppet.debug("Executing on #{@host}:\n#{cmd}")
+      Puppet.debug("Executing on #{@host}:\n#{cmd.gsub(@options[:pass], '*' * @options[:pass].size)}")
       @winrm.powershell(cmd)
     end
   end
