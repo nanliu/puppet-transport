@@ -1,5 +1,3 @@
-require 'winrm' unless Puppet.run_mode.master?
-
 module PuppetX::Puppetlabs::Transport
   class Winrm
     attr_accessor :winrm
@@ -27,10 +25,12 @@ module PuppetX::Puppetlabs::Transport
       when :kerberos
         @endpoint = "https://#{opts[:server]}:#{port}/wsman"
       end
-      Puppet.debug("#{self.class} initializing connection to: #{@options[:host]}")
     end
 
     def connect
+      Puppet.debug("#{self.class} initializing connection to: #{@endpoint}")
+
+      require 'winrm'
       @winrm ||= WinRM::WinRMWebService.new(
         @endpoint,
         @connection,
