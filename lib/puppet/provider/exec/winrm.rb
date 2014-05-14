@@ -4,6 +4,14 @@ begin
   require 'puppet_x/puppetlabs/transport'
   require 'puppet_x/puppetlabs/transport/winrm'
 rescue LoadError => e
+  unless Kernel.respond_to?(:require_relative)
+    module Kernel
+      def require_relative(path)
+        require File.join(File.dirname(caller[0]), path.to_str)
+      end
+    end
+  end
+
   require_relative '../../../puppet_x/puppetlabs/transport'
   require_relative '../../../puppet_x/puppetlabs/transport/winrm'
 end
