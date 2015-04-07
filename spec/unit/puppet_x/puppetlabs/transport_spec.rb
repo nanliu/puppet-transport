@@ -5,6 +5,8 @@ require 'spec_helper'
 
 module PuppetX::Puppetlabs::Transport
   class Dummy
+    include Util
+
     attr_reader :name, :user, :password, :host
 
     def initialize(option)
@@ -22,7 +24,6 @@ module PuppetX::Puppetlabs::Transport
   end
 end
 
-
 describe PuppetX::Puppetlabs::Transport do
 
   before(:all) do
@@ -37,7 +38,7 @@ describe PuppetX::Puppetlabs::Transport do
     end
   end
 
-  it 'should discover and initialize transport resource' do
+  it 'initializes connection via catalog' do
     @dummy = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
     @dummy.class.should == PuppetX::Puppetlabs::Transport::Dummy
     @dummy.name.should == 'conn_a'
@@ -46,18 +47,28 @@ describe PuppetX::Puppetlabs::Transport do
     @dummy.host.should == 'server_a'
   end
 
-  it 'should reuse transport resource' do
+  it 'raise error when transport is invalid' do
+    expect{
+      PuppetX::Puppetlabs::Transport.retrieve(
+        :resource_ref => "Transport[bad]",
+        :catalog => @catalog,
+        :provider => 'dummy'
+      )
+    }.to raise_error(ArgumentError)
+  end
+
+  it 'reuse existing transport' do
     dummy1 = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
     dummy2 = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
     dummy1.should == dummy2
   end
 
-  it 'should find existing transport resource' do
+  it 'find existing transport' do
     dummy1 = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
     PuppetX::Puppetlabs::Transport.find('conn_a', 'dummy').should == dummy1
   end
 
-  it 'should close any open connections' do
+  it 'closes connections on cleanup' do
     dummy1 = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
     dummy2 = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_b]", :catalog => @catalog, :provider => 'dummy')
     dummy1.expects(:close)
@@ -65,7 +76,7 @@ describe PuppetX::Puppetlabs::Transport do
     PuppetX::Puppetlabs::Transport.cleanup
   end
 
-  it 'should close connections after catalog apply' do
+  it 'cleanup connections after catalog apply' do
     PuppetX::Puppetlabs::Transport.expects(:cleanup)
 
     # catalog.apply writes result files, so testing with transaction directly.
@@ -76,5 +87,15 @@ describe PuppetX::Puppetlabs::Transport do
       @transaction = Puppet::Transaction.new(@catalog, nil, nil)
     end
     @transaction.evaluate
+  end
+
+  it 'filters secrets' do
+    @transport = PuppetX::Puppetlabs::Transport.retrieve(:resource_ref => "Transport[conn_a]", :catalog => @catalog, :provider => 'dummy')
+    @transport.add_secret(['xyzcorp', 'b'])
+    @transport.add_secret('abc')
+    @transport.add_secret('xyz')
+
+    message = @transport.filter_secrets('a secret message from xyzcorp to xyz')
+    message.should == 'a secret message from ******* to ***'
   end
 end

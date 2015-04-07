@@ -1,5 +1,6 @@
 module PuppetX::Puppetlabs::Transport
   class Winrm
+    include Util
     attr_accessor :winrm
     attr_reader :name
 
@@ -17,11 +18,13 @@ module PuppetX::Puppetlabs::Transport
         @options[:user] = opts[:username]
         @options[:pass] = opts[:password]
         @options[:disable_sspi] ||= true unless @options[:basic_auth_only]
+        add_secret(@options[:pass])
       when :ssl
         @endpoint = "https://#{opts[:server]}:#{port}/wsman"
         @options[:user] = opts[:username]
         @options[:pass] = opts[:password]
         @options[:disable_sspi] ||= true unless @options[:basic_auth_only]
+        add_secret(@options[:pass])
       when :kerberos
         @endpoint = "https://#{opts[:server]}:#{port}/wsman"
       end
@@ -40,7 +43,7 @@ module PuppetX::Puppetlabs::Transport
     end
 
     def powershell(cmd)
-      Puppet.debug("Executing on #{@host}:\n#{cmd.gsub(@options[:pass], '*' * @options[:pass].size)}")
+      Puppet.debug("Executing on #{@host}:\n#{filter_secrets(cmd)}")
       @winrm.powershell(cmd)
     end
   end

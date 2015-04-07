@@ -24,6 +24,7 @@ module PuppetX
           res_ref  = options[:resource_ref].to_s
           name     = Puppet::Resource.new(nil, res_ref).title
           res      = catalog.resource(res_ref)
+          raise ArgumentError, "Invalid transport metaparameter: #{res_ref} does not exist in catalog" unless res
           res_hash = res.to_hash
           [:server, :username, :password, :options].each do |attr|
             res_hash[attr] ||= res.provider.send(attr)
@@ -69,6 +70,26 @@ module PuppetX
             :catalog => resource.catalog,
             :provider => resource.provider.class.name
           )
+        end
+      end
+
+      module Util
+        def add_secret(value)
+          @secrets ||= []
+          case value
+          when ::String
+            @secrets.push(value) unless @secrets.include? value
+          when ::Array
+            @secrets = (@secrets + value).uniq
+          end
+        end
+
+        def filter_secrets(message)
+          @secrets.sort!{ |a,b| b.length <=> a.length }
+          @secrets.each do |secret|
+            message.gsub!(secret, '*' * secret.size)
+          end
+          message
         end
       end
     end

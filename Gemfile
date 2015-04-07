@@ -1,10 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'hashdiff'
-gem 'rbvmomi'
-gem 'winrm'
-gem 'net-ssh'
-gem 'net-scp'
 
 group :development, :test do
   gem 'rake'
@@ -17,9 +13,9 @@ end
 
 facterversion = ENV['GEM_FACTER_VERSION']
 if facterversion
-    gem 'facter', facterversion
+  gem 'facter', facterversion
 else
-    gem 'facter', :require => false
+  gem 'facter', :require => false
 end
 
 ENV['GEM_PUPPET_VERSION'] ||= ENV['PUPPET_GEM_VERSION']
